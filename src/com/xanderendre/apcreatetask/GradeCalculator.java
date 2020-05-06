@@ -6,7 +6,7 @@ public class GradeCalculator {
 
     public static final Map<String, Double> letterGradeToGPA = new LinkedHashMap<>();
     public static final Map<String, String> sampleGradeRange = new LinkedHashMap<>();
-    public static final Map<String, Double> classInformation = new HashMap<>();
+    public static final Map<Double, Double> classInformation = new HashMap<>();
     public static int totalClasses = 1;
 
     public static void main(String[] args) {
@@ -21,21 +21,22 @@ public class GradeCalculator {
         setSampleGradeRange();
         System.out.println(">>-------- GPA Calculator --------<<");
         System.out.println("Welcome to the AP CSP Create Task GPA Calculator");
-        System.out.println("Before you calculate your GPA we need a little bit more information.");
+        System.out.println("Before you can calculate your GPA a little more information is needed.");
         wait(4000);
         try (Scanner scanner = new Scanner(System.in)) {
             Student student = new Student();
             getStudentInformation(student, scanner);
             // Fix the table
             System.out.println(">>-------- GPA Calculator --------<<");
-            System.out.println("In a moment you will see a table of score ranges. Choose the correlating letter based upon your score.");
+            System.out.println("Below is a table of score ranges.");
             wait(2000);
             for (Map.Entry m : sampleGradeRange.entrySet()) {
                 System.out.println(m.getKey() + "  | " + m.getValue());
             }
 
             System.out.println(">>-------- GPA Calculator --------<<");
-            System.out.println("For each of your " + student.numOfClasses + " class(es) please state the class name, and your score received.");
+            System.out.println("In a moment you will be prompted to enter the letter grade you received for each of your class(es) individually.");
+            System.out.println("Please reference the scoring table above for a more accurate score.");
             wait(2000);
 
             while (totalClasses != student.numOfClasses + 1) {
@@ -62,20 +63,22 @@ public class GradeCalculator {
 
     public static void loadClassInformation(Student student, Scanner scanner) {
         Classes classes = new Classes();
-
-
-        System.out.println("Please enter the name of your " + totalClasses + " class:");
-        classes.className = scanner.nextLine();
-        System.out.println("Please enter the letter grade you received for the class " + classes.className + ":");
+        System.out.println("Please enter the letter grade you received for the class " + totalClasses + ":");
         classes.classGrade = scanner.nextLine();
         double gradeValue = 0;
         // fix case
         if (letterGradeToGPA.containsKey(classes.classGrade.toUpperCase())) {
             gradeValue = letterGradeToGPA.get(classes.classGrade.toUpperCase());
+            System.out.println(gradeValue);
         } else {
             System.out.println("Invalid Grade Inputted");
         }
-        classInformation.put(classes.className, gradeValue);
+        System.out.println("How many credits/hours was this class:");
+        classes.classCredit = scanner.nextDouble();
+        double credits =  classes.classCredit;
+        scanner.nextLine();
+
+        classInformation.put(credits, gradeValue);
         totalClasses += 1;
     }
 
@@ -88,12 +91,15 @@ public class GradeCalculator {
 
     public static double calculateGPA(Student student) {
         double totalClasses = student.numOfClasses;
-        double classesTotal = 0;
-        for (Map.Entry<String, Double> entry : classInformation.entrySet()) {
+        int classesTotal = 0;
+        for (Map.Entry<Double, Double> entry : classInformation.entrySet()) {
+            double creditVal = entry.getKey();
             double temp = entry.getValue();
-            classesTotal += temp;
+            classesTotal += creditVal * temp;
+            System.out.println(classesTotal);
         }
-        double gpa = classesTotal / totalClasses;
+        System.out.println(classesTotal);
+        double gpa = classesTotal / totalClasses * 2;
         return gpa;
     }
 
@@ -164,14 +170,13 @@ public class GradeCalculator {
     }
 
     private static class Student {
-        public final List<Double> studentScores = new ArrayList<>();
         public String firstName;
         public int numOfClasses;
     }
 
     private static class Classes {
 
-        public String className;
+        public double classCredit;
         public String classGrade;
     }
 
