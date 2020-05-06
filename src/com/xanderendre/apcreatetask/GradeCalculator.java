@@ -6,7 +6,7 @@ public class GradeCalculator {
 
     public static final Map<String, Double> letterGradeToGPA = new LinkedHashMap<>();
     public static final Map<String, String> sampleGradeRange = new LinkedHashMap<>();
-    public static final Map<Double, Double> classInformation = new HashMap<>();
+    public static final List<Double> classInformation = new ArrayList<>();
     public static int totalClasses = 1;
 
     public static void main(String[] args) {
@@ -72,13 +72,9 @@ public class GradeCalculator {
             System.out.println(gradeValue);
         } else {
             System.out.println("Invalid Grade Inputted");
+            gradeValue = 0;
         }
-        System.out.println("How many credits/hours was this class:");
-        classes.classCredit = scanner.nextDouble();
-        double credits =  classes.classCredit;
-        scanner.nextLine();
-
-        classInformation.put(credits, gradeValue);
+        classInformation.add(gradeValue);
         totalClasses += 1;
     }
 
@@ -91,15 +87,15 @@ public class GradeCalculator {
 
     public static double calculateGPA(Student student) {
         double totalClasses = student.numOfClasses;
-        int classesTotal = 0;
-        for (Map.Entry<Double, Double> entry : classInformation.entrySet()) {
-            double creditVal = entry.getKey();
-            double temp = entry.getValue();
-            classesTotal += creditVal * temp;
+        double classesTotal = 0;
+        for (int i = 0; i < totalClasses; i++) {
+
+            double temp = classInformation.get(i);
+            classesTotal += temp;
             System.out.println(classesTotal);
         }
         System.out.println(classesTotal);
-        double gpa = classesTotal / totalClasses * 2;
+        double gpa = classesTotal / totalClasses;
         return gpa;
     }
 
